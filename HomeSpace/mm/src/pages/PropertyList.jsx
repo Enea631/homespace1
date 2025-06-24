@@ -1,82 +1,93 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import './PropertyList.scss';
 
 function PropertyList() {
   const [properties, setProperties] = useState([]);
+  // We'll keep track of current image index for each property by property _id
+  const [currentImages, setCurrentImages] = useState({});
 
   useEffect(() => {
-    axios.get('/api/propertieslist')
+    axios.get('http://localhost:5000/api/properties')
       .then(res => setProperties(res.data))
-      .catch(err => console.error('Error fetching houses:', err));
+      .catch(err => console.error('Error fetching properties:', err));
   }, []);
 
+  const truncate = (str, maxLength) => {
+    if (!str) return '';
+    return str.length > maxLength ? str.slice(0, maxLength) + '...' : str;
+  };
+
+  const getImageUrl = (url) => {
+    if (!url) return 'https://via.placeholder.com/300x200';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `http://localhost:5000${url}`;
+  };
+
+  // Handlers to go to next or previous image for a property
+  const nextImage = (propertyId, totalImages) => {
+    setCurrentImages(prev => {
+      const currentIndex = prev[propertyId] ?? 0;
+      const nextIndex = (currentIndex + 1) % totalImages;
+      return { ...prev, [propertyId]: nextIndex };
+    });
+  };
+
+  const prevImage = (propertyId, totalImages) => {
+    setCurrentImages(prev => {
+      const currentIndex = prev[propertyId] ?? 0;
+      const prevIndex = (currentIndex - 1 + totalImages) % totalImages;
+      return { ...prev, [propertyId]: prevIndex };
+    });
+  };
+
   return (
-    <div style={styles.list}>
-      {properties.map((property) => (
-        <Link to={`/property/${property._id}`} key={property._id} style={styles.card}>
-          <img
-            src={property.imageUrls?.[0] || 'https://via.placeholder.com/300x200'}
-            alt={property.title}
-            style={styles.image}
-          />
-          <div style={styles.details}>
-            <h2 style={styles.title}>{property.title}</h2>
-            <p style={styles.location}>{property.location}</p>
-            <span style={styles.price}>${property.price}</span>
-            {property.mapLink && (
-              <p>
-                <a href={property.mapLink} target="_blank" rel="noopener noreferrer">
-                  📍 View on Map
-                </a>
-              </p>
-            )}
-          </div>
-        </Link>
-      ))}
+    <div className="property-list">
+      {properties.length === 0 && <p>No properties found.</p>}
+      {properties.map((property) => {
+        const totalImages = property.imageUrls?.length || 0;
+        const currentIndex = currentImages[property._id] ?? 0;
+        const currentImageUrl = totalImages > 0 ? getImageUrl(property.imageUrls[currentIndex]) : 'https://via.placeholder.com/300x200';
+
+        return (
+          <Link to={`/property/${property._id}`} key={property._id} className="property-card" onClick={e => e.stopPropagation()}>
+            <div className="carousel">
+              <button
+                type="button"
+                className="carousel-button prev"
+                onClick={e => {
+                  e.preventDefault(); // prevent link navigation
+                  prevImage(property._id, totalImages);
+                }}
+              >
+                &#10094;
+              </button>
+
+              <img src={currentImageUrl} alt={`img-${currentIndex}`} className="carousel-image" />
+
+              <button
+                type="button"
+                className="carousel-button next"
+                onClick={e => {
+                  e.preventDefault();
+                  nextImage(property._id, totalImages);
+                }}
+              >
+                &#10095;
+              </button>
+            </div>
+            <div className="property-info">
+              <h2>{property.title}</h2>
+              <p>{property.address?.city || property.location}</p>
+              <span>${property.price.toLocaleString()}</span>
+              <p>{truncate(property.description, 100)}</p>
+            </div>
+          </Link>
+        );
+      })}
     </div>
   );
 }
-
-// Basic styling (unchanged)
-const styles = {
-  list: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
-    gap: '1.5rem',
-    padding: '2rem',
-  },
-  card: {
-    display: 'block',
-    border: '1px solid #ddd',
-    borderRadius: '12px',
-    overflow: 'hidden',
-    textDecoration: 'none',
-    color: 'inherit',
-    backgroundColor: '#fff',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    transition: 'box-shadow 0.2s ease',
-  },
-  image: {
-    width: '100%',
-    height: '200px',
-    objectFit: 'cover',
-  },
-  details: {
-    padding: '1rem',
-  },
-  title: {
-    fontSize: '1.2rem',
-    margin: '0 0 0.5rem 0',
-  },
-  location: {
-    color: '#666',
-    marginBottom: '0.5rem',
-  },
-  price: {
-    fontWeight: 'bold',
-    color: '#2c3e50',
-  },
-};
 
 export default PropertyList;

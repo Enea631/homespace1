@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './Navb.scss';
-import logo from '../LogoImg/LogoHomeSpace.jpg';
+import logo from '../LogoImg/unnamed.jpg';
 
 const Navb = () => {
   return (

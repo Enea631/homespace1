@@ -1,50 +1,51 @@
-import mongoose from 'mongoose';
-import House from './models/properties.js';
+const mongoose = require('mongoose');
+const House = require('./models/properties'); // Adjust relative path if needed
 
-const MONGO_URI = "mongodb+srv://eneaburimi910:1234abc@cluster0.lfsswp9.mongodb.net/homespace"; // Replace with your actual DB name
+const MONGO_URI = "mongodb+srv://eneaburimi910:1234abc@cluster0.lfsswp9.mongodb.net";
 
 const houses = [
-    {
-        title: 'Modern Villa in Tirana',
-        price: 230000,
-        location: 'Tirana, Albania',
-        address: {
-            street: 'Rruga e Elbasanit',
-            city: 'Tirana',
-        },
-        bedrooms: 4,
-        bathrooms: 2,
-        size: 320,
-        description: "Welcome to this well-maintained and deceptively modest single-story home featuring 4 bedrooms, 2 bathrooms, and a layout perfect for both privacy and family living. Located in a peaceful residential neighborhood just minutes from Tirana's city center, this charming home offers a blend of comfort, functionality, and character.The cozy yet open- concept living and dining area flows seamlessly into a practical galley kitchen, making it ideal for both everyday use and entertaining.A sun - filled family room opens up to a private backyard complete with a covered patio and in -ground pool, perfect for relaxing or enjoying warm Tirana afternoons.The primary suite serves as a quiet retreat, while the additional bedrooms offer flexible space for guests, a home office, or growing families.With an attached two - car garage, classic brick exterior and easy access to major highways, shopping, and schools, this home combines suburban tranquility with urban convenience—all in one of Tirana most recognizable neighborhoods.",
-        imageUrls: [
-            '/images/foto1.1.jpg',
-            '/images/foto1.2.jpg',
-            '/images/foto1.3.jpg',
-            '/images/foto1.4.jpg',
-        ],
-        mapLink: "https://www.google.com/maps?q=41.3204322,19.8262368",
+  {
+    title: 'Modern Villa in Tirana',
+    price: 230000,
+    location: 'Tirana, Albania',
+    address: {
+      street: 'Rruga e Elbasanit',
+      city: 'Tirana',
     },
-    {
-        title: 'Cozy villa',
-        price: 225000,
-        location: 'Tirana, Albania',
-        address: {
-            street: 'Rruga Sami Frashëri',
-            city: 'Tirana',
-        },
-        bedrooms: 5,
-        bathrooms: 3,
-        size: 300,
-        description: ' Welcome a beautifully maintained 5-bedroom, 3-bathroom home built in 2018. Offering the perfect mix of modern design, space, and location. This two-story gem features a private office, a large upstairs game room, and a downstairs primary bedroom with a full bath, perfect for multigenerational living. The remaining 4 bedrooms are upstairs. The spacious kitchen opens up to the living and dining areas, while the upstairs loft offers a second living space perfect for movie nights, a home gym, or play area. Step outside to your beautiful backyard featuring a covered patio-ideal for relaxing, grilling, or enjoying outdoor time year-round. Located just steps from the lake of Tirana, this home offers an easy commute to highways, main roads and countless shopping, dining, and entertainment options nearby. Dont miss out on this move-in ready home in a friendly community, close to all the action!',
-        imageUrls: [
-            '/images/foto2.1.jpg',
-            '/images/foto2.2.jpg',
-            '/images/foto2.3.jpg',
-            '/images/foto2.4.jpg',
-        ],
-        mapLink: "https://www.google.com/maps?q=41.321013,19.8139757",
+    bedrooms: 4,
+    bathrooms: 2,
+    size: 320,
+    description: "Welcome to this well-maintained and deceptively modest single-story home featuring 4 bedrooms, 2 bathrooms, and a layout perfect for both privacy and family living. Located in a peaceful residential neighborhood just minutes from Tirana's city center, this charming home offers a blend of comfort, functionality, and character.The cozy yet open- concept living and dining area flows seamlessly into a practical galley kitchen, making it ideal for both everyday use and entertaining.A sun - filled family room opens up to a private backyard complete with a covered patio and in -ground pool, perfect for relaxing or enjoying warm Tirana afternoons.The primary suite serves as a quiet retreat, while the additional bedrooms offer flexible space for guests, a home office, or growing families.With an attached two - car garage, classic brick exterior and easy access to major highways, shopping, and schools, this home combines suburban tranquility with urban convenience—all in one of Tirana most recognizable neighborhoods.",
+    imageUrls: [
+      '/images/foto1.1.jpg',
+      '/images/foto1.2.jpg',
+      '/images/foto1.3.jpg',
+      '/images/foto1.4.jpg',
+    ],
+    mapLink: "https://www.google.com/maps?q=41.3204322,19.8262368",
+  },
+  {
+    title: 'Cozy villa',
+    price: 225000,
+    location: 'Tirana, Albania',
+    address: {
+      street: 'Rruga Sami Frashëri',
+      city: 'Tirana',
     },
-    {
+    bedrooms: 5,
+    bathrooms: 3,
+    size: 300,
+    description: ' Welcome a beautifully maintained 5-bedroom, 3-bathroom home built in 2018. Offering the perfect mix of modern design, space, and location. This two-story gem features a private office, a large upstairs game room, and a downstairs primary bedroom with a full bath, perfect for multigenerational living. The remaining 4 bedrooms are upstairs. The spacious kitchen opens up to the living and dining areas, while the upstairs loft offers a second living space perfect for movie nights, a home gym, or play area. Step outside to your beautiful backyard featuring a covered patio-ideal for relaxing, grilling, or enjoying outdoor time year-round. Located just steps from the lake of Tirana, this home offers an easy commute to highways, main roads and countless shopping, dining, and entertainment options nearby. Dont miss out on this move-in ready home in a friendly community, close to all the action!',
+    imageUrls: [
+      '/images/foto2.1.jpg',
+      '/images/foto2.2.jpg',
+      '/images/foto2.3.jpg',
+      '/images/foto2.4.jpg',
+    ],
+    mapLink: "https://www.google.com/maps?q=41.321013,19.8139757",
+  },
+  // ... (other houses as in your array)
+  {
         title: 'Luxury villa in City Center',
         price: 450000,
         location: 'Tirana, Albania',
@@ -88,24 +89,21 @@ const houses = [
     },
 ];
 
-const seedDB = async () => {
-    try {
-        await mongoose.connect(MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
 
-        console.log('MongoDB connected. Seeding...');
+async function seedDB() {
+  try {
+    await mongoose.connect(MONGO_URI);
+    console.log('MongoDB connected. Seeding...');
 
-        await House.deleteMany();
-        await House.insertMany(houses);
+    await House.deleteMany({});
+    await House.insertMany(houses);
 
-        console.log('Seeding completed.');
-        process.exit();
-    } catch (err) {
-        console.error('Seeding error:', err.message);
-        process.exit(1);
-    }
-};
+    console.log('Seeding completed.');
+    process.exit(0);
+  } catch (err) {
+    console.error('Seeding error:', err);
+    process.exit(1);
+  }
+}
 
 seedDB();

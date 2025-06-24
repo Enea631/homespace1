@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import './contact.css';
 
@@ -29,22 +30,16 @@ const Contact = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('http://localhost:5000/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const response = await axios.post('http://localhost:5000/api/contact', formData);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setStatus({ message: 'Message sent successfully!', variant: 'success' });
-        setFormData({ name: '', email: '', message: '' });
-      } else {
-        setStatus({ message: data.error || 'Something went wrong.', variant: 'danger' });
-      }
+      setStatus({ message: 'Message sent successfully!', variant: 'success' });
+      setFormData({ name: '', email: '', message: '' });
     } catch (error) {
-      setStatus({ message: 'Server error. Please try again later.', variant: 'danger' });
+      if (error.response) {
+        setStatus({ message: error.response.data.error || 'Something went wrong.', variant: 'danger' });
+      } else {
+        setStatus({ message: 'Server error. Please try again later.', variant: 'danger' });
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -57,7 +52,6 @@ const Contact = () => {
           <div className="contact-card shadow-lg p-4 rounded">
             <h2 className="contact-title mb-4 text-center">Contact Us</h2>
             <h5>We're here to help you with anything!</h5>
-
 
             {status.message && (
               <Alert
@@ -124,8 +118,6 @@ const Contact = () => {
                 {isSubmitting ? 'Sending...' : 'Send Message'}
               </Button>
             </Form>
-
-
           </div>
         </Col>
       </Row>

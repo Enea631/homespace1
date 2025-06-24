@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const prListSchema = new mongoose.Schema({
   title: { type: String, required: true },
@@ -11,4 +11,4 @@ const prListSchema = new mongoose.Schema({
 
 const PropertyList = mongoose.model('PropertyList', prListSchema);
 
-export default PropertyList;
+module.exports = PropertyList;

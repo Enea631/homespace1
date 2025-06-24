@@ -1,0 +1,82 @@
+.property-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;  // space between cards
+  gap: 1rem;  // gap between rows and columns
+  padding: 1rem;
+}
+
+.property-card {
+  position: relative;
+  display: block;
+  margin: 60px;
+  width: 38%;          // approx half width minus gap
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.2);
+  }
+}
+
+.carousel {
+  position: relative;
+  width: 100%;
+  height: 300px;  // bigger image height
+  overflow: hidden;
+}
+
+.carousel-image {
+  width: 100%;
+  height: 300px;  // match carousel height
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  background: rgba(0,0,0,0.3);
+  border: none;
+  color: white;
+  font-size: 28px;
+  cursor: pointer;
+  padding: 0 12px;
+  transform: translateY(-50%);
+  user-select: none;
+  border-radius: 4px;
+}
+
+.carousel-button.prev {
+  left: 8px;
+}
+
+.carousel-button.next {
+  right: 8px;
+}
+
+.property-info {
+  padding: 1rem;
+}
+
+.property-info h2 {
+  margin: 0.5rem 0;
+  font-size: 1.5rem;
+}
+
+.property-info p,
+.property-info span {
+  margin: 0.3rem 0;
+  font-size: 1rem;
+}
+@media (max-width: 768px) {
+  .property-card {
+    width: 100%; // stack cards in one column on small screens
+  }
+}

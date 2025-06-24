@@ -1,7 +1,6 @@
+const mongoose = require('mongoose');
 
-import mongoose from 'mongoose';
-
-const properties = new mongoose.Schema({
+const propertiesSchema = new mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -14,11 +13,9 @@ const properties = new mongoose.Schema({
     street: String,
     city: String,
     state: String,
-  
   },
   mapLink: {
     type: String, // e.g., Google Maps URL
-    required: false,
   },
   bedrooms: {
     type: Number,
@@ -42,7 +39,6 @@ const properties = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
- 
 });
 
-export default mongoose.model('properties', properties);
+module.exports = mongoose.model('Property', propertiesSchema);

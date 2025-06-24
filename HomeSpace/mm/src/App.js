@@ -8,6 +8,7 @@ import Navb from './component/Navb';
 import Terms from './component/Terms';
 import PropertyList from './pages/PropertyList'
 import PropertyDetail from './pages/PropertyDetail'
+import AdminPage from './pages/AdminPage';
 
 function App() {
   return (
@@ -20,7 +21,9 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/PropertyList" element={<PropertyList />} />
-          <Route path="/PropertyDetail" element={<PropertyDetail />} />
+          <Route path="/property/:id" element={<PropertyDetail />} />
+          <Route path="/AdminPage" element={<AdminPage />} />
+          
         </Routes>
       </div>
       <Footer />

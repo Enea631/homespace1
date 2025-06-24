@@ -1,6 +1,5 @@
-// routes/propertyListRoutes.js
-import express from 'express';
-import PropertyList from '../models/prList.js';  // Adjust path if needed
+const express = require('express');
+const PropertyList = require('../models/prList');  // Adjust path if needed
 
 const router = express.Router();
 
@@ -62,4 +61,4 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
