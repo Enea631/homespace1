@@ -4,8 +4,9 @@ const cors = require('cors');
 const connectDB = require('./db');
 const contactRoute = require('./route/ContactRoute');
 const proRoute = require('./route/proRoute');
-const prListRoute = require('./route/prListRoute');
+const AgentRoute = require('./route/AgentRoute')
 const path = require('path');
+
 
 dotenv.config();
 
@@ -27,7 +28,7 @@ connectDB();
 // Routes
 app.use('/api/contact', contactRoute);
 app.use('/api/properties', proRoute);
-app.use('/api/propertieslist', prListRoute);
+app.use('/api/agents', AgentRoute);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

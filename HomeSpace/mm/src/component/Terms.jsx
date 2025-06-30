@@ -23,13 +23,14 @@ function Terms() {
             <p>
               <strong>How We Use Your Information:</strong><br />
               We may use your information to:
+              </p>
               <ul>
                 <li>Process orders and manage your account.</li>
                 <li>Provide customer support and respond to inquiries.</li>
                 <li>Send promotional emails and updates.</li>
                 <li>Improve our website and services.</li>
               </ul>
-            </p>
+            
 
             <p>
               <strong>Data Security:</strong><br />

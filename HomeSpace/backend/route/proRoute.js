@@ -8,7 +8,7 @@ const router = express.Router();
 // Setup multer storage - stores files in 'uploads/' folder with original filename
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // make sure this folder exists or create it
+    cb(null, 'images/'); // make sure this folder exists or create it
   },
   filename: function (req, file, cb) {
     // Use timestamp + original file extension to avoid overwrites
@@ -26,7 +26,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
 
     // Map uploaded files to URLs or paths
     // For example, if you serve 'uploads' as static, you can store relative URLs
-    const imageUrls = files.map(file => `/uploads/${file.filename}`);
+    const imageUrls = files.map(file => `/images/${file.filename}`);
 
     // Combine body and imageUrls to create house
     const houseData = {
@@ -71,7 +71,7 @@ router.put('/:id', upload.array('images', 5), async (req, res) => {
 
     // If new images uploaded, add their URLs
     if (files && files.length > 0) {
-      body.imageUrls = files.map(file => `/uploads/${file.filename}`);
+      body.imageUrls = files.map(file => `/images/${file.filename}`);
     }
 
     const updatedHouse = await House.findByIdAndUpdate(

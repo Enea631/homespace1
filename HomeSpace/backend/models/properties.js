@@ -26,7 +26,7 @@ const propertiesSchema = new mongoose.Schema({
     required: true,
   },
   size: {
-    type: Number, // in square meters
+    type: Number,
     required: true,
   },
   description: {
@@ -38,6 +38,18 @@ const propertiesSchema = new mongoose.Schema({
   listedDate: {
     type: Date,
     default: Date.now,
+  },
+  category: {
+    type: String,
+    required: true,
+  },
+  propertyType: {
+    type: String,
+  },
+  agent: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Agent',
+    required: true,
   },
 });
 
