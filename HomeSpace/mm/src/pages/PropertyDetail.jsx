@@ -63,7 +63,7 @@ function PropertyDetail() {
       </div>
 
       <div className="property-main-content">
-        {/* Left content */}
+       
         <div className="left-content">
           <p><strong>Location:</strong> {property.location}</p>
           {property.address && (
@@ -90,7 +90,7 @@ function PropertyDetail() {
         <div className="right-sidebar">
           <div className="agent-card">
             <h3>Agent Information</h3>
-            <p><strong>Name:</strong> {property.agent || 'Unknown Agent'}</p>
+            <p><strong>Name:</strong> {property.name || 'Unknown Agent'}</p>
             <p><strong>Email:</strong> agent@example.com</p>
             <p><strong>Phone:</strong> +355 69 123 4567</p>
           </div>

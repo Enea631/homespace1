@@ -12,10 +12,10 @@ const propertiesSchema = new mongoose.Schema({
   address: {
     street: String,
     city: String,
-    state: String,
+  
   },
   mapLink: {
-    type: String, // e.g., Google Maps URL
+    type: String, 
   },
   bedrooms: {
     type: Number,

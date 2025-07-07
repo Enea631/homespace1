@@ -1,24 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './AdminPage.scss';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "./AdminPage.scss";
 
 const initialPropertyState = {
-  title: '',
-  price: '',
-  address: { street: '', city: '' },
-  mapLink: '',
-  bedrooms: '',
-  bathrooms: '',
-  size: '',
-  description: '',
+  title: "",
+  price: "",
+  address: { street: "", city: "" },
+  mapLink: "",
+  bedrooms: "",
+  bathrooms: "",
+  size: "",
+  description: "",
   imageUrls: [],
   existingImages: [],
-  category: '',
+  category: "",
+  agent: "",
+  propertyType: "",
 };
 
 const initialAgentState = {
-  name: '',
-  description: '',
+  name: "",
+  description: "",
   imageFile: null,
 };
 
@@ -50,10 +52,10 @@ function AdminPage() {
   const fetchProperties = async () => {
     setLoadingProperties(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/properties');
+      const res = await axios.get("http://localhost:5000/api/properties");
       setProperties(res.data);
     } catch {
-      alert('Error fetching properties');
+      alert("Error fetching properties");
     }
     setLoadingProperties(false);
   };
@@ -62,10 +64,10 @@ function AdminPage() {
   const fetchContacts = async () => {
     setLoadingContacts(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/contact');
+      const res = await axios.get("http://localhost:5000/api/contact");
       setContacts(res.data);
     } catch {
-      alert('Error fetching contacts');
+      alert("Error fetching contacts");
     }
     setLoadingContacts(false);
   };
@@ -74,10 +76,10 @@ function AdminPage() {
   const fetchAgents = async () => {
     setLoadingAgents(true);
     try {
-      const res = await axios.get('http://localhost:5000/api/agents');
+      const res = await axios.get("http://localhost:5000/api/agents");
       setAgents(res.data);
     } catch {
-      alert('Error fetching agents');
+      alert("Error fetching agents");
     }
     setLoadingAgents(false);
   };
@@ -85,8 +87,8 @@ function AdminPage() {
   // PROPERTY FORM HANDLERS
   const handlePropertyChange = (e) => {
     const { name, value } = e.target;
-    if (name.startsWith('address.')) {
-      const key = name.split('.')[1];
+    if (name.startsWith("address.")) {
+      const key = name.split(".")[1];
       setFormData((prev) => ({
         ...prev,
         address: { ...prev.address, [key]: value },
@@ -98,7 +100,10 @@ function AdminPage() {
 
   const handlePropertyFileChange = (e) => {
     const files = Array.from(e.target.files);
-    setFormData((prev) => ({ ...prev, imageUrls: [...prev.imageUrls, ...files] }));
+    setFormData((prev) => ({
+      ...prev,
+      imageUrls: [...prev.imageUrls, ...files],
+    }));
   };
 
   const handleRemoveNewImage = (index) => {
@@ -120,39 +125,44 @@ function AdminPage() {
     e.preventDefault();
     try {
       const data = new FormData();
-      data.append('title', formData.title);
-      data.append('price', formData.price);
-      data.append('address.street', formData.address.street);
-      data.append('address.city', formData.address.city);
-      data.append('mapLink', formData.mapLink);
-      data.append('bedrooms', formData.bedrooms);
-      data.append('bathrooms', formData.bathrooms);
-      data.append('size', formData.size);
-      data.append('description', formData.description);
-      data.append('category', formData.category);
+      data.append("title", formData.title);
+      data.append("price", formData.price);
+      data.append("address.street", formData.address.street);
+      data.append("address.city", formData.address.city);
+      data.append("mapLink", formData.mapLink);
+      data.append("bedrooms", formData.bedrooms);
+      data.append("bathrooms", formData.bathrooms);
+      data.append("size", formData.size);
+      data.append("description", formData.description);
+      data.append("category", formData.category);
+      data.append("agent", formData.agent);
 
       formData.imageUrls.forEach((file) => {
-        data.append('images', file);
+        data.append("images", file);
       });
 
-      data.append('existingImages', JSON.stringify(formData.existingImages));
+      data.append("existingImages", JSON.stringify(formData.existingImages));
 
       if (editingPropertyId) {
-        await axios.put(`http://localhost:5000/api/properties/${editingPropertyId}`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        alert('Property updated');
+        await axios.put(
+          `http://localhost:5000/api/properties/${editingPropertyId}`,
+          data,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        alert("Property updated");
       } else {
-        await axios.post('http://localhost:5000/api/properties', data, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+        await axios.post("http://localhost:5000/api/properties", data, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
-        alert('Property created');
+        alert("Property created");
       }
       setFormData(initialPropertyState);
       setEditingPropertyId(null);
       fetchProperties();
     } catch (err) {
-      alert('Error saving property');
+      alert("Error saving property");
       console.error(err);
     }
   };
@@ -160,7 +170,7 @@ function AdminPage() {
   // AGENT FORM HANDLERS
   const handleAgentChange = (e) => {
     const { name, value, files } = e.target;
-    if (name === 'imageFile') {
+    if (name === "imageFile") {
       setAgentForm((prev) => ({ ...prev, imageFile: files[0] }));
     } else {
       setAgentForm((prev) => ({ ...prev, [name]: value }));
@@ -171,29 +181,33 @@ function AdminPage() {
     e.preventDefault();
     try {
       const data = new FormData();
-      data.append('name', agentForm.name);
-      data.append('description', agentForm.description);
+      data.append("name", agentForm.name);
+      data.append("description", agentForm.description);
       if (agentForm.imageFile) {
-        data.append('image', agentForm.imageFile);
+        data.append("image", agentForm.imageFile);
       }
 
       if (editingAgentId) {
-        await axios.put(`http://localhost:5000/api/agents/${editingAgentId}`, data, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        alert('Agent updated');
+        await axios.put(
+          `http://localhost:5000/api/agents/${editingAgentId}`,
+          data,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+        );
+        alert("Agent updated");
       } else {
-        await axios.post('http://localhost:5000/api/agents', data, {
-          headers: { 'Content-Type': 'multipart/form-data' },
+        await axios.post("http://localhost:5000/api/agents", data, {
+          headers: { "Content-Type": "multipart/form-data" },
         });
-        alert('Agent created');
+        alert("Agent created");
       }
 
       setAgentForm(initialAgentState);
       setEditingAgentId(null);
       fetchAgents();
     } catch (err) {
-      alert('Error saving agent');
+      alert("Error saving agent");
       console.error(err);
     }
   };
@@ -202,8 +216,8 @@ function AdminPage() {
   const handleEditAgent = (agent) => {
     setEditingAgentId(agent._id);
     setAgentForm({
-      name: agent.name || '',
-      description: agent.description || '',
+      name: agent.name || "",
+      description: agent.description || "",
       imageFile: null,
     });
     window.scrollTo(0, 0);
@@ -211,13 +225,13 @@ function AdminPage() {
 
   // Delete Agent
   const handleDeleteAgent = async (id) => {
-    if (window.confirm('Are you sure to delete this agent?')) {
+    if (window.confirm("Are you sure to delete this agent?")) {
       try {
         await axios.delete(`http://localhost:5000/api/agents/${id}`);
-        alert('Agent deleted');
+        alert("Agent deleted");
         fetchAgents();
       } catch {
-        alert('Error deleting agent');
+        alert("Error deleting agent");
       }
     }
   };
@@ -226,33 +240,33 @@ function AdminPage() {
   const handleEdit = (property) => {
     setEditingPropertyId(property._id);
     setFormData({
-      title: property.title || '',
-      price: property.price || '',
+      title: property.title || "",
+      price: property.price || "",
       address: {
-        street: property.address?.street || '',
-        city: property.address?.city || '',
+        street: property.address?.street || "",
+        city: property.address?.city || "",
       },
-      mapLink: property.mapLink || '',
-      bedrooms: property.bedrooms || '',
-      bathrooms: property.bathrooms || '',
-      size: property.size || '',
-      description: property.description || '',
+      mapLink: property.mapLink || "",
+      bedrooms: property.bedrooms || "",
+      bathrooms: property.bathrooms || "",
+      size: property.size || "",
+      description: property.description || "",
       imageUrls: [],
       existingImages: property.imageUrls || [],
-      category: property.category || '',
+      category: property.category || "",
     });
     window.scrollTo(0, 0);
   };
 
   // Delete Property
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure to delete this property?')) {
+    if (window.confirm("Are you sure to delete this property?")) {
       try {
         await axios.delete(`http://localhost:5000/api/properties/${id}`);
-        alert('Property deleted');
+        alert("Property deleted");
         fetchProperties();
       } catch (err) {
-        alert('Error deleting property');
+        alert("Error deleting property");
         console.error(err);
       }
     }
@@ -260,13 +274,13 @@ function AdminPage() {
 
   // Delete Contact
   const handleDeleteContact = async (id) => {
-    if (window.confirm('Are you sure to delete this contact message?')) {
+    if (window.confirm("Are you sure to delete this contact message?")) {
       try {
         await axios.delete(`http://localhost:5000/api/contact/${id}`);
-        alert('Contact deleted');
+        alert("Contact deleted");
         fetchContacts();
       } catch (err) {
-        alert('Error deleting contact');
+        alert("Error deleting contact");
         console.error(err);
       }
     }
@@ -278,11 +292,21 @@ function AdminPage() {
       <nav className="admin-nav">
         <h3>Admin Navigation</h3>
         <ul>
-          <li><a href="#contacts">Contact Messages</a></li>
-          <li><a href="#properties">Properties</a></li>
-          <li><a href="#property-form">Create Properties</a></li>
-          <li><a href="#agents">Agents</a></li>
-          <li><a href="#agent-form">Add Agents</a></li>
+          <li>
+            <a href="#contacts">Contact Messages</a>
+          </li>
+          <li>
+            <a href="#properties">Properties</a>
+          </li>
+          <li>
+            <a href="#property-form">Create Properties</a>
+          </li>
+          <li>
+            <a href="#agents">Agents</a>
+          </li>
+          <li>
+            <a href="#agent-form">Add Agents</a>
+          </li>
         </ul>
       </nav>
 
@@ -312,7 +336,10 @@ function AdminPage() {
                     <td>{contact.email}</td>
                     <td>{contact.message}</td>
                     <td>
-                      <button className="delete" onClick={() => handleDeleteContact(contact._id)}>
+                      <button
+                        className="delete"
+                        onClick={() => handleDeleteContact(contact._id)}
+                      >
                         Delete
                       </button>
                     </td>
@@ -350,7 +377,9 @@ function AdminPage() {
                   <tr key={property._id}>
                     <td>{property.title}</td>
                     <td>${property.price}</td>
-                    <td>{property.address?.street}, {property.address?.city}</td>
+                    <td>
+                      {property.address?.street}, {property.address?.city}
+                    </td>
                     <td>{property.bedrooms}</td>
                     <td>{property.bathrooms}</td>
                     <td>{property.size} sq ft</td>
@@ -361,13 +390,18 @@ function AdminPage() {
                           key={idx}
                           src={img}
                           alt={property.title}
-                          style={{ width: '50px', marginRight: '5px' }}
+                          style={{ width: "50px", marginRight: "5px" }}
                         />
                       ))}
                     </td>
                     <td>
                       <button onClick={() => handleEdit(property)}>Edit</button>
-                      <button className="delete" onClick={() => handleDelete(property._id)}>Delete</button>
+                      <button
+                        className="delete"
+                        onClick={() => handleDelete(property._id)}
+                      >
+                        Delete
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -381,7 +415,8 @@ function AdminPage() {
           <h1>Create Properties</h1>
           <form onSubmit={handlePropertySubmit} encType="multipart/form-data">
             <div>
-              <label>Title</label><br />
+              <label>Title</label>
+              <br />
               <input
                 type="text"
                 name="title"
@@ -391,7 +426,8 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>Price</label><br />
+              <label>Price</label>
+              <br />
               <input
                 type="number"
                 name="price"
@@ -401,7 +437,8 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>Street</label><br />
+              <label>Street</label>
+              <br />
               <input
                 type="text"
                 name="address.street"
@@ -411,7 +448,8 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>City</label><br />
+              <label>City</label>
+              <br />
               <input
                 type="text"
                 name="address.city"
@@ -421,7 +459,8 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>Map Link</label><br />
+              <label>Map Link</label>
+              <br />
               <input
                 type="text"
                 name="mapLink"
@@ -430,7 +469,8 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>Bedrooms</label><br />
+              <label>Bedrooms</label>
+              <br />
               <input
                 type="number"
                 name="bedrooms"
@@ -440,7 +480,8 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>Bathrooms</label><br />
+              <label>Bathrooms</label>
+              <br />
               <input
                 type="number"
                 name="bathrooms"
@@ -450,7 +491,8 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>Size (sq ft)</label><br />
+              <label>Size (sq ft)</label>
+              <br />
               <input
                 type="number"
                 name="size"
@@ -460,7 +502,8 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>Description</label><br />
+              <label>Description</label>
+              <br />
               <textarea
                 name="description"
                 value={formData.description}
@@ -469,17 +512,55 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>Category</label><br />
-              <input
-                type="text"
+              <label>Property Type</label>
+              <br />
+              <select
+                name="propertyType"
+                value={formData.propertyType}
+                onChange={handlePropertyChange}
+                required
+              >
+                <option value="">-- Select Type --</option>
+                <option value="villa">Villa</option>
+                <option value="apartament">Apartament</option>
+              </select>
+            </div>
+            <div>
+              <label>Category</label>
+              <br />
+              <select
                 name="category"
                 value={formData.category}
                 onChange={handlePropertyChange}
                 required
-              />
+              >
+                <option value="">-- Select Type --</option>
+                <option value="for sale">Sale</option>
+                <option value="for rent">Rent</option>
+              </select>
             </div>
+
             <div>
-              <label>Upload Images</label><br />
+              <label>Agent</label>
+              <br />
+              <select
+                name="agent"
+                value={formData.agent || ""}
+                onChange={handlePropertyChange}
+                required
+              >
+                <option value="">-- Select Agent --</option>
+                {agents.map((agent) => (
+                  <option key={agent._id} value={agent._id}>
+                    {agent.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label>Upload Images</label>
+              <br />
               <input
                 type="file"
                 multiple
@@ -493,8 +574,11 @@ function AdminPage() {
               <ul>
                 {formData.imageUrls.map((file, idx) => (
                   <li key={idx}>
-                    {file.name}{' '}
-                    <button type="button" onClick={() => handleRemoveNewImage(idx)}>
+                    {file.name}{" "}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveNewImage(idx)}
+                    >
                       Remove
                     </button>
                   </li>
@@ -503,20 +587,31 @@ function AdminPage() {
             </div>
             <div>
               <p>Existing Images:</p>
-              {formData.existingImages.length === 0 && <p>No existing images</p>}
+              {formData.existingImages.length === 0 && (
+                <p>No existing images</p>
+              )}
               <ul>
                 {formData.existingImages.map((img, idx) => (
                   <li key={idx}>
-                    <img src={img} alt="existing" style={{ width: '50px', marginRight: '5px' }} />
-                    <button type="button" onClick={() => handleRemoveExistingImage(img)}>
+                    <img
+                      src={img}
+                      alt="existing"
+                      style={{ width: "50px", marginRight: "5px" }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveExistingImage(img)}
+                    >
                       Remove
                     </button>
                   </li>
                 ))}
               </ul>
             </div>
-            <div style={{ marginTop: '15px' }}>
-              <button type="submit">{editingPropertyId ? 'Update' : 'Create'} Property</button>
+            <div style={{ marginTop: "15px" }}>
+              <button type="submit">
+                {editingPropertyId ? "Update" : "Create"} Property
+              </button>
               {editingPropertyId && (
                 <button
                   type="button"
@@ -524,7 +619,7 @@ function AdminPage() {
                     setEditingPropertyId(null);
                     setFormData(initialPropertyState);
                   }}
-                  style={{ marginLeft: '10px' }}
+                  style={{ marginLeft: "10px" }}
                 >
                   Cancel
                 </button>
@@ -560,13 +655,18 @@ function AdminPage() {
                         <img
                           src={agent.imageUrl}
                           alt={agent.name}
-                          style={{ width: '50px' }}
+                          style={{ width: "50px" }}
                         />
                       )}
                     </td>
                     <td>
-                      <button onClick={() => handleEditAgent(agent)}>Edit</button>
-                      <button className="delete" onClick={() => handleDeleteAgent(agent._id)}>
+                      <button onClick={() => handleEditAgent(agent)}>
+                        Edit
+                      </button>
+                      <button
+                        className="delete"
+                        onClick={() => handleDeleteAgent(agent._id)}
+                      >
                         Delete
                       </button>
                     </td>
@@ -579,10 +679,11 @@ function AdminPage() {
 
         {/* AGENT FORM */}
         <section id="agent-form" className="section-margin-top">
-          <h1>{editingAgentId ? 'Edit Agent' : 'Add Agent'}</h1>
+          <h1>{editingAgentId ? "Edit Agent" : "Add Agent"}</h1>
           <form onSubmit={handleAgentSubmit} encType="multipart/form-data">
             <div>
-              <label>Name</label><br />
+              <label>Name</label>
+              <br />
               <input
                 type="text"
                 name="name"
@@ -592,7 +693,8 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>Description</label><br />
+              <label>Description</label>
+              <br />
               <textarea
                 name="description"
                 value={agentForm.description}
@@ -601,7 +703,8 @@ function AdminPage() {
               />
             </div>
             <div>
-              <label>Image</label><br />
+              <label>Image</label>
+              <br />
               <input
                 type="file"
                 name="imageFile"
@@ -609,8 +712,10 @@ function AdminPage() {
                 onChange={handleAgentChange}
               />
             </div>
-            <div style={{ marginTop: '15px' }}>
-              <button type="submit">{editingAgentId ? 'Update' : 'Add'} Agent</button>
+            <div style={{ marginTop: "15px" }}>
+              <button type="submit">
+                {editingAgentId ? "Update" : "Add"} Agent
+              </button>
               {editingAgentId && (
                 <button
                   type="button"
@@ -618,7 +723,7 @@ function AdminPage() {
                     setEditingAgentId(null);
                     setAgentForm(initialAgentState);
                   }}
-                  style={{ marginLeft: '10px' }}
+                  style={{ marginLeft: "10px" }}
                 >
                   Cancel
                 </button>
