@@ -108,7 +108,7 @@ const PropertyList = () => {
         <>
           {/* For Sale Section */}
           <div className="property-section">
-            <h2>Properties For Sale</h2>
+            <h2 id='12'>Properties For Sale </h2>
 
             {/* Villas for Sale */}
             {renderSection('Villas', filterByType(forSale, 'villa'))}
@@ -119,7 +119,7 @@ const PropertyList = () => {
 
           {/* For Rent Section */}
           <div className="property-section">
-            <h2>Properties For Rent</h2>
+            <h2 id='13'>Properties For Rent</h2>
 
             {/* Villas for Rent */}
             {renderSection('Villas', filterByType(forRent, 'villa'))}

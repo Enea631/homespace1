@@ -1,35 +1,26 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Carousel } from 'react-bootstrap';
+import axios from 'axios';
 import './Home.css';
 
-const agents = [
-  {
-    id: 1,
-    name: 'Anna Smith',
-    photo: '/images/agent1.jpg',
-    description: 'Expert in residential properties with 10+ years helping clients find their dream home.',
-  },
-  {
-    id: 2,
-    name: 'John Doe',
-    photo: '/images/agent2.jpg',
-    description: 'Specializes in commercial real estate with a deep knowledge of local markets.',
-  },
-  {
-    id: 3,
-    name: 'Emily Johnson',
-    photo: '/images/agent3.jpg',
-    description: 'Passionate about matching buyers with the perfect apartment or condo.',
-  },
-  {
-    id: 4,
-    name: 'Michael Brown',
-    photo: '/images/agent4.jpg',
-    description: 'Experienced in luxury villas and vacation homes worldwide.',
-  },
-];
-
 const Home = () => {
+  const [agents, setAgents] = useState([]);
+
+  // Fetch agents from your backend
+  useEffect(() => {
+    const fetchAgents = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/agents'); // Make sure this route works
+        setAgents(res.data);
+      } catch (error) {
+        console.error('Failed to fetch agents:', error);
+      }
+    };
+
+    fetchAgents();
+  }, []);
+  const backendURL = 'http://localhost:5000';
+
   return (
     <div className="home-page">
       <div className="home-hero-text">
@@ -66,7 +57,7 @@ const Home = () => {
       {/* Who We Are */}
       <div className="home-company-info">
         <img
-          src="http://localhost:5000/images/unnamed.jpg"
+          src="http://localhost:5000/images/LogoHomeSpace.jpg"
           alt="Company"
         />
         <h2>Who We Are</h2>
@@ -93,18 +84,25 @@ const Home = () => {
       </div>
 
       {/* Sales Agents Section */}
-      <section className="home-agents">
-        <h2>Meet Our Sales Agents</h2>
-        <div className="agent-cards">
-          {agents.map(({ id, name, photo, description }) => (
-            <div className="agent-card" key={id}>
-              <img src={photo} alt={name} className="agent-photo" />
-              <h3 className="agent-name">{name}</h3>
-              <p className="agent-description">{description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+      
+
+<section className="home-agents">
+  <h2>Meet Our Sales Agents</h2>
+  <div className="agent-cards">
+    {agents.map(({ _id, name, imageUrl, description }) => (
+      <div className="agent-card" key={_id}>
+        <img
+          src={`${backendURL}${imageUrl}`}  // prepend backend URL here
+          alt={name}
+          className="agent-photo"
+        />
+        <h3 className="agent-name">{name}</h3>
+        <p className="agent-description">{description}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
     </div>
   );
 };
