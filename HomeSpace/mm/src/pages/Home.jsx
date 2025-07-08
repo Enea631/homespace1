@@ -81,6 +81,10 @@ const Home = () => {
           professionals dedicated to excellence, innovation, and personalized service. Our journey is a testament to our
           core belief: real estate is about relationships, not just transactions.
         </p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius nesciunt voluptas sit aliquam possimus ipsum si maiores mollitia animi suscipit non at deserunt nihil inctate impedit. Exercitatidebitis animi repellendus incidunt ullam corrupti officia perspiciatis consequuntur consequatur dignissimos, veniam a dicta! Vitae, architecto.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius nesciunt voluptas sit aliquam possimus ipsum sequi, officia asperiores officiis voluptatibus libero architecto aperiam ex recusandae repellendus impedit. Nihil accusamus velit emollitia animi suscipit non at deserunt nihil incidunt inventore atque solis animi repellendus incidunt ullam corrupti officia perspiciatis consequuntur consequatur dignissimos, veniam a dicta! Vitae, architecto.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius nesciunt voluptas sit aliquam possimus ipsum sequi, officia asperiores officiis voluptatibus libero architecto aperiam ex recusandae repellendus impedit. Nihil accusamus velit excndis debitis animi repellendus incidunt ullam corrupti officia perspiciatis consequuntur consequatur dignissimos, veniam a dicta! Vitae, architecto.</p>
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Eius nesciunt voluptas sit aliquam possimus ipsum sequi, officia asperiores officiis voluptatibus libero architecto aperiam ex recusandae repellendus impedit. Nihil accusamus velit excepturi quasi officiis delectus ullam? Quos nam vitae omnis fugit, nobis, obcaecati maior qui sequi ab nobis sunt, sapiente dignissimos voluptate impedit. Exercitationem minima neque similique beatae itaque vitae cumque enim iste ducimus! Perferendis debitis animi repellendus incidunt ullam corrupti officia perspiciatis consequuntur consequatur dignissimos, veniam a dicta! Vitae, architecto.</p>
       </div>
 
       {/* Sales Agents Section */}
@@ -102,7 +106,9 @@ const Home = () => {
     ))}
   </div>
 </section>
-
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla, praesentium alias reiciendis voluptas repellat vel vitae at debitis qui autem ducimus et. Delectus earum laborum perferendis quidem, quas exercitationem rerum? Soluta optio molestias laudantium minima atque nesciunt consectetur veniam rerum!</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla, praesentium alias reiciendis voluptas repellat vel vitae at debitis qui autem ducimus et. Delectus earum laborum perferendis quidem, quas exercitationem rerum? Soluta optio molestias laudantium minima atque nesciunt consectetur veniam rerum!</p>
+<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla, praesentium alias reiciendis voluptas repellat vel vitae at debitis qui autem ducimus et. Delectus earum laborum perferendis quidem, quas exercitationem rerum? Soluta optio molestias laudantium minima atque nesciunt consectetur veniam rerum!</p>
     </div>
   );
 };

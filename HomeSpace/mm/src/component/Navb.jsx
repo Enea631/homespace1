@@ -59,15 +59,15 @@ const Navb = () => {
           onMouseEnter={() => setIsDropdownOpen(true)}
           onMouseLeave={() => setIsDropdownOpen(false)}
         >
-          <button
+          <Link
+            to="/PropertyList"
             className="dropbtn"
-            onClick={toggleDropdown}
+            onClick={closeNav}
             aria-haspopup="true"
             aria-expanded={isDropdownOpen}
-            type="button"
           >
             Properties
-          </button>
+          </Link>
 
           <div className={`dropdown-content ${isDropdownOpen ? "show" : ""}`}>
             <HashLink smooth to="/PropertyList#12" onClick={closeNav}>
@@ -78,6 +78,7 @@ const Navb = () => {
             </HashLink>
           </div>
         </div>
+
 
         <Link to="/about" onClick={closeNav}>
           About

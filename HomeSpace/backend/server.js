@@ -6,6 +6,7 @@ const contactRoute = require('./route/ContactRoute');
 const proRoute = require('./route/proRoute');
 const AgentRoute = require('./route/AgentRoute')
 const path = require('path');
+const auth = require('./route/auth')
 
 
 dotenv.config();
@@ -29,6 +30,7 @@ connectDB();
 app.use('/api/contact', contactRoute);
 app.use('/api/properties', proRoute);
 app.use('/api/agents', AgentRoute);
+app.use("/api/auth", auth);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
