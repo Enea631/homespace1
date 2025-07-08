@@ -11,11 +11,11 @@ const initialPropertyState = {
   bathrooms: "",
   size: "",
   description: "",
-  imageUrls: [],
-  existingImages: [],
+  imageUrls: [],       // new uploaded files (File objects)
+  existingImages: [],  // existing image URLs (strings)
   category: "",
-  agent: "",
   propertyType: "",
+  agent: "",           // agent _id string
 };
 
 const initialAgentState = {
@@ -25,66 +25,65 @@ const initialAgentState = {
 };
 
 function AdminPage() {
-  // Properties state
+  // States
   const [properties, setProperties] = useState([]);
   const [formData, setFormData] = useState(initialPropertyState);
   const [editingPropertyId, setEditingPropertyId] = useState(null);
   const [loadingProperties, setLoadingProperties] = useState(false);
 
-  // Contacts state
   const [contacts, setContacts] = useState([]);
   const [loadingContacts, setLoadingContacts] = useState(false);
 
-  // Agents state
   const [agents, setAgents] = useState([]);
   const [agentForm, setAgentForm] = useState(initialAgentState);
   const [editingAgentId, setEditingAgentId] = useState(null);
   const [loadingAgents, setLoadingAgents] = useState(false);
 
-  // Fetch on mount
+  // Fetch all data on mount
   useEffect(() => {
     fetchProperties();
     fetchContacts();
     fetchAgents();
   }, []);
 
-  // Fetch Properties
+  // Fetch functions
   const fetchProperties = async () => {
     setLoadingProperties(true);
     try {
       const res = await axios.get("http://localhost:5000/api/properties");
       setProperties(res.data);
-    } catch {
+    } catch (err) {
       alert("Error fetching properties");
+      console.error(err);
     }
     setLoadingProperties(false);
   };
 
-  // Fetch Contacts
   const fetchContacts = async () => {
     setLoadingContacts(true);
     try {
       const res = await axios.get("http://localhost:5000/api/contact");
       setContacts(res.data);
-    } catch {
+    } catch (err) {
       alert("Error fetching contacts");
+      console.error(err);
     }
     setLoadingContacts(false);
   };
 
-  // Fetch Agents
   const fetchAgents = async () => {
     setLoadingAgents(true);
     try {
       const res = await axios.get("http://localhost:5000/api/agents");
       setAgents(res.data);
-    } catch {
+    } catch (err) {
       alert("Error fetching agents");
+      console.error(err);
     }
     setLoadingAgents(false);
   };
 
-  // PROPERTY FORM HANDLERS
+  // Handle changes in property form
   const handlePropertyChange = (e) => {
     const { name, value } = e.target;
     if (name.startsWith("address.")) {
@@ -98,6 +97,7 @@ function AdminPage() {
     }
   };
 
+  // Handle new image files selection
   const handlePropertyFileChange = (e) => {
     const files = Array.from(e.target.files);
     setFormData((prev) => ({
@@ -106,6 +106,7 @@ function AdminPage() {
     }));
   };
 
+  // Remove a newly added image file (before upload)
   const handleRemoveNewImage = (index) => {
     setFormData((prev) => {
       const newFiles = [...prev.imageUrls];
@@ -114,6 +115,7 @@ function AdminPage() {
     });
   };
 
+  // Remove an existing image (URL)
   const handleRemoveExistingImage = (imageUrl) => {
     setFormData((prev) => ({
       ...prev,
@@ -121,8 +123,10 @@ function AdminPage() {
     }));
   };
 
+  // Submit property form (create or update)
   const handlePropertySubmit = async (e) => {
     e.preventDefault();
+
     try {
       const data = new FormData();
       data.append("title", formData.title);
@@ -135,29 +139,35 @@ function AdminPage() {
       data.append("size", formData.size);
       data.append("description", formData.description);
       data.append("category", formData.category);
+      data.append("propertyType", formData.propertyType);
       data.append("agent", formData.agent);
 
+      // Append new image files
       formData.imageUrls.forEach((file) => {
         data.append("images", file);
       });
 
-      data.append("existingImages", JSON.stringify(formData.existingImages));
+      // Append existing images (URLs) as JSON string
+      if (formData.existingImages.length > 0) {
+        data.append("existingImages", JSON.stringify(formData.existingImages));
+      }
 
       if (editingPropertyId) {
         await axios.put(
           `http://localhost:5000/api/properties/${editingPropertyId}`,
           data,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          { headers: { "Content-Type": "multipart/form-data" } }
         );
         alert("Property updated");
       } else {
-        await axios.post("http://localhost:5000/api/properties", data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await axios.post(
+          "http://localhost:5000/api/properties",
+          data,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
         alert("Property created");
       }
+
       setFormData(initialPropertyState);
       setEditingPropertyId(null);
       fetchProperties();
@@ -167,7 +177,7 @@ function AdminPage() {
     }
   };
 
-  // AGENT FORM HANDLERS
+  // Agent form change handler
   const handleAgentChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "imageFile") {
@@ -177,8 +187,10 @@ function AdminPage() {
     }
   };
 
+  // Submit agent form (create/update)
   const handleAgentSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const data = new FormData();
       data.append("name", agentForm.name);
@@ -191,15 +203,15 @@ function AdminPage() {
         await axios.put(
           `http://localhost:5000/api/agents/${editingAgentId}`,
           data,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          { headers: { "Content-Type": "multipart/form-data" } }
         );
         alert("Agent updated");
       } else {
-        await axios.post("http://localhost:5000/api/agents", data, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
+        await axios.post(
+          "http://localhost:5000/api/agents",
+          data,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
         alert("Agent created");
       }
 
@@ -212,7 +224,7 @@ function AdminPage() {
     }
   };
 
-  // Edit Agent
+  // Edit agent - prefill form
   const handleEditAgent = (agent) => {
     setEditingAgentId(agent._id);
     setAgentForm({
@@ -223,20 +235,21 @@ function AdminPage() {
     window.scrollTo(0, 0);
   };
 
-  // Delete Agent
+  // Delete agent
   const handleDeleteAgent = async (id) => {
     if (window.confirm("Are you sure to delete this agent?")) {
       try {
         await axios.delete(`http://localhost:5000/api/agents/${id}`);
         alert("Agent deleted");
         fetchAgents();
-      } catch {
+      } catch (err) {
         alert("Error deleting agent");
+        console.error(err);
       }
     }
   };
 
-  // Edit Property
+  // Edit property - prefill form
   const handleEdit = (property) => {
     setEditingPropertyId(property._id);
     setFormData({
@@ -254,11 +267,13 @@ function AdminPage() {
       imageUrls: [],
       existingImages: property.imageUrls || [],
       category: property.category || "",
+      propertyType: property.propertyType || "",
+      agent: property.agent || "",
     });
     window.scrollTo(0, 0);
   };
 
-  // Delete Property
+  // Delete property
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure to delete this property?")) {
       try {
@@ -272,7 +287,7 @@ function AdminPage() {
     }
   };
 
-  // Delete Contact
+  // Delete contact message
   const handleDeleteContact = async (id) => {
     if (window.confirm("Are you sure to delete this contact message?")) {
       try {
@@ -286,33 +301,26 @@ function AdminPage() {
     }
   };
 
+  // Helper to get full URL for images (adjust if needed)
+  const getFullImageUrl = (url) =>
+    url.startsWith("http") ? url : `http://localhost:5000${url}`;
+
   return (
     <div className="admin-page">
-      {/* Left side nav */}
       <nav className="admin-nav">
         <h3>Admin Navigation</h3>
         <ul>
-          <li>
-            <a href="#contacts">Contact Messages</a>
-          </li>
-          <li>
-            <a href="#properties">Properties</a>
-          </li>
-          <li>
-            <a href="#property-form">Create Properties</a>
-          </li>
-          <li>
-            <a href="#agents">Agents</a>
-          </li>
-          <li>
-            <a href="#agent-form">Add Agents</a>
-          </li>
+          <li><a href="#contacts">Contact Messages</a></li>
+          <li><a href="#properties">Properties</a></li>
+          <li><a href="#property-form">Create Properties</a></li>
+          <li><a href="#agents">Agents</a></li>
+          <li><a href="#agent-form">Add Agents</a></li>
         </ul>
       </nav>
 
-      {/* Main content */}
       <main className="admin-main">
-        {/* CONTACTS */}
+
+        {/* CONTACT MESSAGES */}
         <section id="contacts">
           <h1>Contact Messages</h1>
           {loadingContacts ? (
@@ -326,6 +334,8 @@ function AdminPage() {
                   <th>Name</th>
                   <th>Email</th>
                   <th>Message</th>
+                  <th>Agent</th>
+                  <th>Created At</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -335,6 +345,8 @@ function AdminPage() {
                     <td>{contact.name}</td>
                     <td>{contact.email}</td>
                     <td>{contact.message}</td>
+                    <td>{contact.agent?.name || contact.agent || "N/A"}</td>
+                    <td>{new Date(contact.createdAt).toLocaleString()}</td>
                     <td>
                       <button
                         className="delete"
@@ -366,8 +378,10 @@ function AdminPage() {
                   <th>Address</th>
                   <th>Bedrooms</th>
                   <th>Bathrooms</th>
-                  <th>Size</th>
+                  <th>Size (sq ft)</th>
                   <th>Category</th>
+                  <th>Property Type</th>
+                  <th>Agent</th>
                   <th>Images</th>
                   <th>Actions</th>
                 </tr>
@@ -376,19 +390,21 @@ function AdminPage() {
                 {properties.map((property) => (
                   <tr key={property._id}>
                     <td>{property.title}</td>
-                    <td>${property.price}</td>
+                    <td>${property.price.toLocaleString()}</td>
                     <td>
                       {property.address?.street}, {property.address?.city}
                     </td>
                     <td>{property.bedrooms}</td>
                     <td>{property.bathrooms}</td>
-                    <td>{property.size} sq ft</td>
+                    <td>{property.size}</td>
                     <td>{property.category}</td>
+                    <td>{property.propertyType}</td>
+                    <td>{property.agent?.name || property.agent || "N/A"}</td>
                     <td>
                       {property.imageUrls?.map((img, idx) => (
                         <img
                           key={idx}
-                          src={img}
+                          src={getFullImageUrl(img)}
                           alt={property.title}
                           style={{ width: "50px", marginRight: "5px" }}
                         />
@@ -412,11 +428,11 @@ function AdminPage() {
 
         {/* PROPERTY FORM */}
         <section id="property-form" className="section-margin-top">
-          <h1>Create Properties</h1>
+          <h1>{editingPropertyId ? "Edit Property" : "Create Property"}</h1>
           <form onSubmit={handlePropertySubmit} encType="multipart/form-data">
+            {/* Title */}
             <div>
-              <label>Title</label>
-              <br />
+              <label>Title</label><br />
               <input
                 type="text"
                 name="title"
@@ -425,9 +441,10 @@ function AdminPage() {
                 required
               />
             </div>
+
+            {/* Price */}
             <div>
-              <label>Price</label>
-              <br />
+              <label>Price</label><br />
               <input
                 type="number"
                 name="price"
@@ -436,9 +453,10 @@ function AdminPage() {
                 required
               />
             </div>
+
+            {/* Address street */}
             <div>
-              <label>Street</label>
-              <br />
+              <label>Street</label><br />
               <input
                 type="text"
                 name="address.street"
@@ -447,9 +465,10 @@ function AdminPage() {
                 required
               />
             </div>
+
+            {/* Address city */}
             <div>
-              <label>City</label>
-              <br />
+              <label>City</label><br />
               <input
                 type="text"
                 name="address.city"
@@ -458,9 +477,10 @@ function AdminPage() {
                 required
               />
             </div>
+
+            {/* Map link */}
             <div>
-              <label>Map Link</label>
-              <br />
+              <label>Map Link</label><br />
               <input
                 type="text"
                 name="mapLink"
@@ -468,9 +488,10 @@ function AdminPage() {
                 onChange={handlePropertyChange}
               />
             </div>
+
+            {/* Bedrooms */}
             <div>
-              <label>Bedrooms</label>
-              <br />
+              <label>Bedrooms</label><br />
               <input
                 type="number"
                 name="bedrooms"
@@ -479,9 +500,10 @@ function AdminPage() {
                 required
               />
             </div>
+
+            {/* Bathrooms */}
             <div>
-              <label>Bathrooms</label>
-              <br />
+              <label>Bathrooms</label><br />
               <input
                 type="number"
                 name="bathrooms"
@@ -490,9 +512,10 @@ function AdminPage() {
                 required
               />
             </div>
+
+            {/* Size */}
             <div>
-              <label>Size (sq ft)</label>
-              <br />
+              <label>Size (sq ft)</label><br />
               <input
                 type="number"
                 name="size"
@@ -501,9 +524,10 @@ function AdminPage() {
                 required
               />
             </div>
+
+            {/* Description */}
             <div>
-              <label>Description</label>
-              <br />
+              <label>Description</label><br />
               <textarea
                 name="description"
                 value={formData.description}
@@ -511,9 +535,10 @@ function AdminPage() {
                 required
               />
             </div>
+
+            {/* Property Type */}
             <div>
-              <label>Property Type</label>
-              <br />
+              <label>Property Type</label><br />
               <select
                 name="propertyType"
                 value={formData.propertyType}
@@ -525,24 +550,25 @@ function AdminPage() {
                 <option value="apartament">Apartament</option>
               </select>
             </div>
+
+            {/* Category */}
             <div>
-              <label>Category</label>
-              <br />
+              <label>Category</label><br />
               <select
                 name="category"
                 value={formData.category}
                 onChange={handlePropertyChange}
                 required
               >
-                <option value="">-- Select Type --</option>
+                <option value="">-- Select Category --</option>
                 <option value="for sale">Sale</option>
                 <option value="for rent">Rent</option>
               </select>
             </div>
 
+            {/* Agent */}
             <div>
-              <label>Agent</label>
-              <br />
+              <label>Agent</label><br />
               <select
                 name="agent"
                 value={formData.agent || ""}
@@ -558,9 +584,9 @@ function AdminPage() {
               </select>
             </div>
 
+            {/* Upload images */}
             <div>
-              <label>Upload Images</label>
-              <br />
+              <label>Upload Images</label><br />
               <input
                 type="file"
                 multiple
@@ -568,6 +594,8 @@ function AdminPage() {
                 onChange={handlePropertyFileChange}
               />
             </div>
+
+            {/* New images preview */}
             <div>
               <p>New Images:</p>
               {formData.imageUrls.length === 0 && <p>No new images added</p>}
@@ -585,22 +613,24 @@ function AdminPage() {
                 ))}
               </ul>
             </div>
+
+            {/* Existing images preview */}
             <div>
               <p>Existing Images:</p>
               {formData.existingImages.length === 0 && (
                 <p>No existing images</p>
               )}
               <ul>
-                {formData.existingImages.map((img, idx) => (
+                {formData.existingImages.map((url, idx) => (
                   <li key={idx}>
                     <img
-                      src={img}
-                      alt="existing"
-                      style={{ width: "50px", marginRight: "5px" }}
+                      src={getFullImageUrl(url)}
+                      alt={`Existing ${idx}`}
+                      style={{ width: "100px", marginRight: "10px" }}
                     />
                     <button
                       type="button"
-                      onClick={() => handleRemoveExistingImage(img)}
+                      onClick={() => handleRemoveExistingImage(url)}
                     >
                       Remove
                     </button>
@@ -608,29 +638,25 @@ function AdminPage() {
                 ))}
               </ul>
             </div>
-            <div style={{ marginTop: "15px" }}>
-              <button type="submit">
-                {editingPropertyId ? "Update" : "Create"} Property
+
+            <button type="submit">{editingPropertyId ? "Update" : "Create"}</button>
+            {editingPropertyId && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData(initialPropertyState);
+                  setEditingPropertyId(null);
+                }}
+              >
+                Cancel
               </button>
-              {editingPropertyId && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingPropertyId(null);
-                    setFormData(initialPropertyState);
-                  }}
-                  style={{ marginLeft: "10px" }}
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
+            )}
           </form>
         </section>
 
-        {/* AGENTS */}
+        {/* AGENTS TABLE */}
         <section id="agents" className="section-margin-top">
-          <h1>Agents</h1>
+          <h2>Agents</h2>
           {loadingAgents ? (
             <p>Loading...</p>
           ) : agents.length === 0 ? (
@@ -651,18 +677,18 @@ function AdminPage() {
                     <td>{agent.name}</td>
                     <td>{agent.description}</td>
                     <td>
-                      {agent.imageUrl && (
+                      {agent.imageUrl ? (
                         <img
-                          src={agent.imageUrl}
+                          src={getFullImageUrl(agent.imageUrl)}
                           alt={agent.name}
                           style={{ width: "50px" }}
                         />
+                      ) : (
+                        "No image"
                       )}
                     </td>
                     <td>
-                      <button onClick={() => handleEditAgent(agent)}>
-                        Edit
-                      </button>
+                      <button onClick={() => handleEditAgent(agent)}>Edit</button>
                       <button
                         className="delete"
                         onClick={() => handleDeleteAgent(agent._id)}
@@ -682,8 +708,7 @@ function AdminPage() {
           <h1>{editingAgentId ? "Edit Agent" : "Add Agent"}</h1>
           <form onSubmit={handleAgentSubmit} encType="multipart/form-data">
             <div>
-              <label>Name</label>
-              <br />
+              <label>Name</label><br />
               <input
                 type="text"
                 name="name"
@@ -692,9 +717,9 @@ function AdminPage() {
                 required
               />
             </div>
+
             <div>
-              <label>Description</label>
-              <br />
+              <label>Description</label><br />
               <textarea
                 name="description"
                 value={agentForm.description}
@@ -702,9 +727,9 @@ function AdminPage() {
                 required
               />
             </div>
+
             <div>
-              <label>Image</label>
-              <br />
+              <label>Image</label><br />
               <input
                 type="file"
                 name="imageFile"
@@ -712,23 +737,19 @@ function AdminPage() {
                 onChange={handleAgentChange}
               />
             </div>
-            <div style={{ marginTop: "15px" }}>
-              <button type="submit">
-                {editingAgentId ? "Update" : "Add"} Agent
+
+            <button type="submit">{editingAgentId ? "Update" : "Add"}</button>
+            {editingAgentId && (
+              <button
+                type="button"
+                onClick={() => {
+                  setAgentForm(initialAgentState);
+                  setEditingAgentId(null);
+                }}
+              >
+                Cancel
               </button>
-              {editingAgentId && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingAgentId(null);
-                    setAgentForm(initialAgentState);
-                  }}
-                  style={{ marginLeft: "10px" }}
-                >
-                  Cancel
-                </button>
-              )}
-            </div>
+            )}
           </form>
         </section>
       </main>

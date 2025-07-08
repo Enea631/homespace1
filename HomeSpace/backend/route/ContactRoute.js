@@ -5,8 +5,8 @@ const Contact = require('../models/Contact');
 // CREATE a new contact message
 router.post('/', async (req, res) => {
   try {
-    const { name, email, message } = req.body;
-    const newContact = new Contact({ name, email, message });
+    const { name, email, message, agent } = req.body; // include agent
+    const newContact = new Contact({ name, email, message, agent }); // save agent
     const savedContact = await newContact.save();
     res.status(201).json(savedContact);
   } catch (err) {
@@ -14,6 +14,7 @@ router.post('/', async (req, res) => {
     res.status(500).json({ error: 'Something went wrong.' });
   }
 });
+
 
 // READ all contact messages
 router.get('/', async (req, res) => {

@@ -9,6 +9,8 @@ import Terms from './component/Terms';
 import PropertyList from './pages/PropertyList'
 import PropertyDetail from './pages/PropertyDetail'
 import AdminPage from './pages/AdminPage';
+// import AgentPage from './pages/AgentPage;'
+import StaffPage from './pages/StaffPage';
 
 function App() {
   return (
@@ -23,6 +25,9 @@ function App() {
           <Route path="/PropertyList" element={<PropertyList />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
           <Route path="/AdminPage" element={<AdminPage />} />
+          {/* <Route path="/AgentPage" element={<AgentPage />} /> */}
+          <Route path="/StaffPage" element={<StaffPage />} />
+
           
         </Routes>
       </div>

@@ -1,9 +1,7 @@
 admin--- ndaj format, krijo stafin(agjentet) 
 shto agjent te detail
-krijo sektor per te ndar apartamentet nga vilat
-properties te navbar te ket dropdown (sale, rent)
-footer
-
-link te navbar
 responsivitet
 logo
+
+
+login(afisho ne faqet)

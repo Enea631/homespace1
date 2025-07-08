@@ -6,21 +6,42 @@ import './PropertyDetail.scss';
 function PropertyDetail() {
   const { id } = useParams();
   const [property, setProperty] = useState(null);
+  const [agent, setAgent] = useState(null);
   const [mainImage, setMainImage] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: '',
+    agent: '',  // <-- keep this key as `agent`
   });
 
   const getImageUrl = (url) => `http://localhost:5000${url}`;
 
   useEffect(() => {
+    // Fetch property details
     axios.get(`http://localhost:5000/api/properties/${id}`)
       .then(res => {
         setProperty(res.data);
         if (res.data.imageUrls && res.data.imageUrls.length > 0) {
           setMainImage(getImageUrl(res.data.imageUrls[0]));
+        }
+
+        // Fetch agent info
+        if (res.data.agent) {
+          axios.get(`http://localhost:5000/api/agents/${res.data.agent}`)
+            .then(agentRes => {
+              setAgent(agentRes.data);
+              setFormData(prev => ({
+                ...prev,
+                agent: agentRes.data._id  // <-- set agent id here correctly
+              }));
+            })
+            .catch(err => {
+              console.error('Error fetching agent:', err);
+              setAgent(null);
+            });
+        } else {
+          setAgent(null);
         }
       })
       .catch(err => console.error('Error fetching property:', err));
@@ -30,10 +51,21 @@ function PropertyDetail() {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert('Message sent to agent!');
-    setFormData({ name: '', email: '', message: '' });
+    try {
+      await axios.post('http://localhost:5000/api/contact', formData);
+      alert('Message sent to agent!');
+      setFormData({
+        name: '',
+        email: '',
+        message: '',
+        agent: agent ? agent._id : '',  // reset with agent id for next message
+      });
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      alert('Failed to send message. Please try again.');
+    }
   };
 
   if (!property) return <p>Loading...</p>;
@@ -63,7 +95,6 @@ function PropertyDetail() {
       </div>
 
       <div className="property-main-content">
-       
         <div className="left-content">
           <p><strong>Location:</strong> {property.location}</p>
           {property.address && (
@@ -86,13 +117,24 @@ function PropertyDetail() {
           )}
         </div>
 
-        {/* Right content - agent info and contact form */}
         <div className="right-sidebar">
           <div className="agent-card">
             <h3>Agent Information</h3>
-            <p><strong>Name:</strong> {property.name || 'Unknown Agent'}</p>
-            <p><strong>Email:</strong> agent@example.com</p>
-            <p><strong>Phone:</strong> +355 69 123 4567</p>
+            {agent ? (
+              <>
+                <img
+                  src={getImageUrl(agent.imageUrl)}
+                  alt={agent.name}
+                  style={{ width: '100%', borderRadius: '8px', marginBottom: '10px' }}
+                />
+                <p><strong>Name:</strong> {agent.name}</p>
+                <p><strong>Email:</strong> {agent.email}</p>
+                <p><strong>Phone:</strong> {agent.phone}</p>
+                <p><strong>Description:</strong> {agent.description}</p>
+              </>
+            ) : (
+              <p>Loading agent info...</p>
+            )}
           </div>
 
           <div className="contact-form">
