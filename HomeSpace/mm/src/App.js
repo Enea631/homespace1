@@ -11,6 +11,8 @@ import PropertyDetail from './pages/PropertyDetail'
 import AdminPage from './pages/AdminPage';
 // import AgentPage from './pages/AgentPage;'
 import StaffPage from './pages/StaffPage';
+import LoginPage from './pages/LoginPage'
+import ProtectedRoute from "./component/ProtectedRoute";
 
 function App() {
   return (
@@ -24,11 +26,13 @@ function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/PropertyList" element={<PropertyList />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
-          <Route path="/AdminPage" element={<AdminPage />} />
           {/* <Route path="/AgentPage" element={<AgentPage />} /> */}
-          <Route path="/StaffPage" element={<StaffPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/staff" element={<ProtectedRoute><StaffPage /></ProtectedRoute>} />
+          <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
 
-          
+
+
         </Routes>
       </div>
       <Footer />

@@ -1,45 +1,45 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "./StaffPage.scss";
 
 function StaffPage() {
+  const [agentInfo, setAgentInfo] = useState(null);
   const [properties, setProperties] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [newProperty, setNewProperty] = useState({
-    title: "",
-    price: "",
-    category: "",
-    street: "",
-    city: "",
-    description: "",
-    imageFiles: [],
-  });
 
-  // Get token from localStorage after login
   const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!token) {
-      alert("Please log in");
+      alert("Please login");
       setLoading(false);
       return;
     }
 
     const fetchData = async () => {
       try {
-        const [propertyRes, contactRes] = await Promise.all([
-          axios.get("http://localhost:5000/api/properties", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get("http://localhost:5000/api/contact", {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
-        setProperties(propertyRes.data);
+        // Assuming your backend can decode the token and send agent info
+        const agentRes = await axios.get("http://localhost:5000/api/agents/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAgentInfo(agentRes.data);
+
+        // Fetch only properties belonging to this agent
+        const propRes = await axios.get(
+          `http://localhost:5000/api/properties?agent=${agentRes.data._id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setProperties(propRes.data);
+
+        // Fetch only contact messages related to this agent
+        const contactRes = await axios.get(
+          `http://localhost:5000/api/contact?agent=${agentRes.data._id}`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
         setContacts(contactRes.data);
-      } catch (err) {
-        console.error(err);
+      } catch (error) {
+        console.error(error);
         alert("Failed to load data");
       } finally {
         setLoading(false);
@@ -49,206 +49,104 @@ function StaffPage() {
     fetchData();
   }, [token]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setNewProperty((prev) => ({ ...prev, [name]: value }));
-  };
+  if (!token) return <p>Please log in to access your dashboard.</p>;
 
-  const handleFileChange = (e) => {
-    setNewProperty((prev) => ({ ...prev, imageFiles: [...e.target.files] }));
-  };
+  if (loading) return <p>Loading...</p>;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!token) return alert("Please log in");
-
-    const formData = new FormData();
-    formData.append("title", newProperty.title);
-    formData.append("price", newProperty.price);
-    formData.append("category", newProperty.category);
-    formData.append("description", newProperty.description);
-    formData.append("street", newProperty.street);
-    formData.append("city", newProperty.city);
-    newProperty.imageFiles.forEach((file) => formData.append("images", file));
-
-    try {
-      const res = await axios.post("http://localhost:5000/api/properties", formData, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setProperties((prev) => [...prev, res.data]);
-      setNewProperty({
-        title: "",
-        price: "",
-        category: "",
-        street: "",
-        city: "",
-        description: "",
-        imageFiles: [],
-      });
-      alert("Property created!");
-    } catch (err) {
-      console.error(err);
-      alert("Error creating property");
-    }
-  };
-
-  if (!token) {
-    return <p>Please log in to access your dashboard.</p>;
-  }
+  if (!agentInfo) return <p>Agent info not found.</p>;
 
   return (
     <div className="staff-page">
-      <h1>Agent Dashboard</h1>
+      <nav className="staff-nav">
+        <h3>My Dashboard</h3>
+        <ul>
+          <li><a href="#info">My Info</a></li>
+          <li><a href="#properties">My Properties</a></li>
+          <li><a href="#contacts">My Contacts</a></li>
+        </ul>
+      </nav>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <>
-          {/* Contact Messages */}
-          <section>
-            <h2>Contact Messages</h2>
-            {contacts.length === 0 ? (
-              <p>No messages found.</p>
-            ) : (
-              <table>
-                <thead>
-                  <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Message</th>
+      <main className="staff-main">
+        <section id="info">
+          <h1>My Information</h1>
+          <p><strong>Name:</strong> {agentInfo.name}</p>
+          <p><strong>Description:</strong> {agentInfo.description}</p>
+          {agentInfo.imageUrl && (
+            <img
+              src={agentInfo.imageUrl.startsWith("http") ? agentInfo.imageUrl : `http://localhost:5000${agentInfo.imageUrl}`}
+              alt={agentInfo.name}
+              style={{ maxWidth: "150px", borderRadius: "8px" }}
+            />
+          )}
+        </section>
+
+        <section id="properties" className="section-margin-top">
+          <h2>My Properties</h2>
+          {properties.length === 0 ? (
+            <p>No properties found.</p>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Price</th>
+                  <th>Address</th>
+                  <th>Category</th>
+                  <th>Images</th>
+                </tr>
+              </thead>
+              <tbody>
+                {properties.map((prop) => (
+                  <tr key={prop._id}>
+                    <td>{prop.title}</td>
+                    <td>${prop.price.toLocaleString()}</td>
+                    <td>{prop.address?.street}, {prop.address?.city}</td>
+                    <td>{prop.category}</td>
+                    <td>
+                      {prop.imageUrls?.map((img, idx) => (
+                        <img
+                          key={idx}
+                          src={img.startsWith("http") ? img : `http://localhost:5000${img}`}
+                          alt={prop.title}
+                          style={{ width: "40px", marginRight: "5px" }}
+                        />
+                      ))}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {contacts.map((msg) => (
-                    <tr key={msg._id}>
-                      <td>{msg.name}</td>
-                      <td>{msg.email}</td>
-                      <td>{msg.message}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </section>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
 
-          {/* Properties */}
-          <section style={{ marginTop: "40px" }}>
-            <h2>Properties</h2>
-            {properties.length === 0 ? (
-              <p>No properties found.</p>
-            ) : (
-              <table>
-                <thead>
-                  <tr>
-                    <th>Title</th>
-                    <th>Price</th>
-                    <th>Address</th>
-                    <th>Category</th>
-                    <th>Images</th>
+        <section id="contacts" className="section-margin-top">
+          <h2>My Contact Messages</h2>
+          {contacts.length === 0 ? (
+            <p>No contact messages found.</p>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Message</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {contacts.map((msg) => (
+                  <tr key={msg._id}>
+                    <td>{msg.name}</td>
+                    <td>{msg.email}</td>
+                    <td>{msg.message}</td>
+                    <td>{new Date(msg.createdAt).toLocaleString()}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {properties.map((prop) => (
-                    <tr key={prop._id}>
-                      <td>{prop.title}</td>
-                      <td>${prop.price}</td>
-                      <td>
-                        {prop.address?.street}, {prop.address?.city}
-                      </td>
-                      <td>{prop.category}</td>
-                      <td>
-                        {prop.imageUrls?.map((img, idx) => (
-                          <img
-                            key={idx}
-                            src={img}
-                            alt="property"
-                            style={{ width: "40px", marginRight: "5px" }}
-                          />
-                        ))}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </section>
-
-          {/* Create Property */}
-          <section className="section-margin-top">
-            <h2>Create New Property</h2>
-            <form onSubmit={handleSubmit}>
-              <div>
-                <label>Title</label>
-                <input
-                  type="text"
-                  name="title"
-                  value={newProperty.title}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Price</label>
-                <input
-                  type="number"
-                  name="price"
-                  value={newProperty.price}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Category</label>
-                <input
-                  type="text"
-                  name="category"
-                  value={newProperty.category}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Street</label>
-                <input
-                  type="text"
-                  name="street"
-                  value={newProperty.street}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>City</label>
-                <input
-                  type="text"
-                  name="city"
-                  value={newProperty.city}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div>
-                <label>Description</label>
-                <textarea
-                  name="description"
-                  value={newProperty.description}
-                  onChange={handleChange}
-                />
-              </div>
-              <div>
-                <label>Images</label>
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-              </div>
-              <button type="submit">Create Property</button>
-            </form>
-          </section>
-        </>
-      )}
+                ))}
+              </tbody>
+            </table>
+          )}
+        </section>
+      </main>
     </div>
   );
 }
