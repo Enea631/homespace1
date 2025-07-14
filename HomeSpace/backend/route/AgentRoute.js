@@ -1,4 +1,3 @@
-// route/AgentRoute.js
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -10,7 +9,7 @@ const router = express.Router();
 // Setup multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'images/'); // ensure this folder exists
+    cb(null, 'images/'); // make sure this folder exists
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);

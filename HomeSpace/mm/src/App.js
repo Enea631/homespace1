@@ -9,10 +9,11 @@ import Terms from './component/Terms';
 import PropertyList from './pages/PropertyList'
 import PropertyDetail from './pages/PropertyDetail'
 import AdminPage from './pages/AdminPage';
-// import AgentPage from './pages/AgentPage;'
+import AgentList from './pages/AgentList';
 import StaffPage from './pages/StaffPage';
-import LoginPage from './pages/LoginPage'
+import LoginPage from './pages/LoginPage';
 import ProtectedRoute from "./component/ProtectedRoute";
+import AgentDetail from "./pages/AgentDetail";
 
 function App() {
   return (
@@ -26,7 +27,8 @@ function App() {
           <Route path="/terms" element={<Terms />} />
           <Route path="/PropertyList" element={<PropertyList />} />
           <Route path="/property/:id" element={<PropertyDetail />} />
-          {/* <Route path="/AgentPage" element={<AgentPage />} /> */}
+          <Route path="/AgentList" element={<AgentList />} />
+          <Route path="/agents/:id" element={<AgentDetail />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/staff" element={<ProtectedRoute><StaffPage /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />

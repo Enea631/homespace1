@@ -1,4 +1,3 @@
-// Login.js
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -11,9 +10,12 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
+    // Trim name before sending
+    const trimmedName = name.trim();
+
     try {
       const res = await axios.post('http://localhost:5000/api/auth/login', {
-        name,
+        name: trimmedName,
         password,
       });
 
@@ -34,8 +36,17 @@ function Login() {
 
   return (
     <form onSubmit={handleLogin}>
-      <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" />
+      <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Name"
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+      />
       <button type="submit">Login</button>
     </form>
   );

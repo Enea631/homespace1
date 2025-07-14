@@ -79,6 +79,10 @@ const Navb = () => {
           </div>
         </div>
 
+        {/* Added Agents link */}
+        <Link to="/agentlist" onClick={closeNav}>
+          Agents
+        </Link>
 
         <Link to="/about" onClick={closeNav}>
           About
