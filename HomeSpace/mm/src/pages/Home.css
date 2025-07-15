@@ -67,6 +67,7 @@
   max-width: 1000px;
   margin: 0 auto 60px;
   text-align: center;
+  
 }
 
 .home-agents h2 {
@@ -77,9 +78,11 @@
 
 .agent-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, 1fr); 
   gap: 24px;
+  
 }
+
 
 .agent-card {
   background-color: #fafafa;
@@ -88,6 +91,7 @@
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: default;
+   text-decoration: none; 
 }
 
 .agent-card:hover {
@@ -97,7 +101,7 @@
 
 .agent-photo {
   width: 100%;
-  height: 220px;
+  height: 320px;
   object-fit: cover;
   border-radius: 10px;
   margin-bottom: 15px;

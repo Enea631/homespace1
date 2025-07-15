@@ -6,7 +6,7 @@
 }
 
 .property-card {
-  width: calc(42% - 0.5rem); // 2 cards per row
+  width: calc(40% - 2.5rem); // 2 cards per row
   box-sizing: border-box;
   margin: 0rem 4rem 4rem 4rem;
   border: 1px solid #ccc;
@@ -76,6 +76,53 @@
     font-weight: bold;
   }
 }
+.property-header {
+  text-align: center;
+  padding: 60px 20px 40px;
+  background-color: #f8f8f8;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.property-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #1e1e1e;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.property-header p {
+  font-size: 1.15rem;
+  color: #555;
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+.property-section {
+  padding: 60px 20px;
+  border-top: 1px solid #eaeaea;
+  text-align: center;
+}
+
+.property-section h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 25px;
+  position: relative;
+  display: inline-block;
+}
+
+.property-section h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background-color: #0077cc; /* Accent underline */
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
 
 @media (max-width: 768px) {
   .property-card {

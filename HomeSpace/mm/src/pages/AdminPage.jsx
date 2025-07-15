@@ -21,6 +21,8 @@ const initialPropertyState = {
 const initialAgentState = {
   name: "",
   description: "",
+  email:"",
+  phone:"",
   imageFile: null,
 };
 
@@ -230,6 +232,8 @@ function AdminPage() {
     setAgentForm({
       name: agent.name || "",
       description: agent.description || "",
+      email: agent.email ||"",
+      phone: agent.phone ||"",
       imageFile: null,
     });
     window.scrollTo(0, 0);
@@ -667,6 +671,8 @@ function AdminPage() {
                 <tr>
                   <th>Name</th>
                   <th>Description</th>
+                  <th>Email</th>
+                  <th>Phone</th>
                   <th>Image</th>
                   <th>Actions</th>
                 </tr>
@@ -675,6 +681,8 @@ function AdminPage() {
                 {agents.map((agent) => (
                   <tr key={agent._id}>
                     <td>{agent.name}</td>
+                    <td>{agent.email}</td>
+                    <td>{agent.phone}</td>
                     <td>{agent.description}</td>
                     <td>
                       {agent.imageUrl ? (
@@ -723,6 +731,24 @@ function AdminPage() {
               <textarea
                 name="description"
                 value={agentForm.description}
+                onChange={handleAgentChange}
+                required
+              />
+            </div>
+            <div>
+              <label>Email</label><br />
+              <textarea
+                name="email"
+                value={agentForm.email}
+                onChange={handleAgentChange}
+                required
+              />
+            </div>
+            <div>
+              <label>Phone Number</label><br />
+              <textarea
+                name="phone"
+                value={agentForm.phone}
                 onChange={handleAgentChange}
                 required
               />

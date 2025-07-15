@@ -98,9 +98,9 @@ const PropertyList = () => {
   return (
     <section className="property-page">
       <div className="property-header">
-        <h1>Browse Properties</h1>
-        <p>Explore properties available for sale and rent.</p>
-      </div>
+  <h1>Discover Your Next Home</h1>
+  <p>Browse our wide selection of properties for sale and rent — from cozy apartments to luxurious villas, all in one place.</p>
+</div>
 
       {loading ? (
         <p>Loading properties...</p>

@@ -71,15 +71,21 @@ router.get('/', async (req, res) => {
 });
 
 // READ single agent by ID
+// READ single agent by ID with properties populated
 router.get('/:id', async (req, res) => {
   try {
-    const agent = await Agent.findById(req.params.id);
+    const agent = await Agent.findById(req.params.id)
+      .populate('properties')  // <-- populate virtual field 'properties'
+      .exec();
+
     if (!agent) return res.status(404).json({ error: 'Agent not found' });
+
     res.json(agent);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // UPDATE agent by ID with optional image upload
 router.put('/:id', upload.single('image'), async (req, res) => {

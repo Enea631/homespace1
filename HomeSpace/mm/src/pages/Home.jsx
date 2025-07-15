@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Carousel } from 'react-bootstrap';
 import axios from 'axios';
 import './Home.css';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   const [agents, setAgents] = useState([]);
@@ -56,10 +57,7 @@ const Home = () => {
 
       {/* Who We Are */}
       <div className="home-company-info">
-        <img
-          src="http://localhost:5000/images/LogoHomeSpace.jpg"
-          alt="Company"
-        />
+        
         <h2>Who We Are</h2>
         <p>
           At <strong>Home Space</strong>, we’re passionate about helping people find their dream homes.
@@ -94,18 +92,19 @@ const Home = () => {
   <h2>Meet Our Sales Agents</h2>
   <div className="agent-cards">
     {agents.map(({ _id, name, imageUrl, description }) => (
-      <div className="agent-card" key={_id}>
+      <Link to={`/agents/${_id}`} key={_id} className="agent-card">
         <img
-          src={`${backendURL}${imageUrl}`}  // prepend backend URL here
+          src={`${backendURL}${imageUrl}`}
           alt={name}
           className="agent-photo"
         />
         <h3 className="agent-name">{name}</h3>
         <p className="agent-description">{description}</p>
-      </div>
+      </Link>
     ))}
   </div>
 </section>
+
 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla, praesentium alias reiciendis voluptas repellat vel vitae at debitis qui autem ducimus et. Delectus earum laborum perferendis quidem, quas exercitationem rerum? Soluta optio molestias laudantium minima atque nesciunt consectetur veniam rerum!</p>
 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla, praesentium alias reiciendis voluptas repellat vel vitae at debitis qui autem ducimus et. Delectus earum laborum perferendis quidem, quas exercitationem rerum? Soluta optio molestias laudantium minima atque nesciunt consectetur veniam rerum!</p>
 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla, praesentium alias reiciendis voluptas repellat vel vitae at debitis qui autem ducimus et. Delectus earum laborum perferendis quidem, quas exercitationem rerum? Soluta optio molestias laudantium minima atque nesciunt consectetur veniam rerum!</p>

@@ -19,6 +19,9 @@ function AgentList() {
   return (
     <div className="agent-list">
       <h1>Our Agents</h1>
+      <p className="agent-intro">
+      Meet the professionals ready to help you find your dream home. Each agent brings dedication, experience, and local expertise to guide you every step of the way.
+    </p>
       <div className="agent-grid">
         {agents.map(agent => (
           <Link to={`/agents/${agent._id}`} key={agent._id} className="agent-card">

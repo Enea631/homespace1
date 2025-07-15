@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import './LoginPage.scss';
 
 function Login() {
   const [name, setName] = useState('');
@@ -35,7 +36,7 @@ function Login() {
   };
 
   return (
-    <form onSubmit={handleLogin}>
+    <form className="login-form"   onSubmit={handleLogin}>
       <input
         value={name}
         onChange={(e) => setName(e.target.value)}
