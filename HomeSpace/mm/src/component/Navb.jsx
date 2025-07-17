@@ -28,7 +28,7 @@ const Navb = () => {
     <nav className="navbar">
       <Link to="/" className="logo" onClick={closeNav}>
         <img
-          src="http://localhost:5000/images/LogoHomeSpace.jpg"
+          src="http://localhost:5000/images/NewLogo.jpg"
           alt="HomeSpace Logo"
           className="logo-img"
         />

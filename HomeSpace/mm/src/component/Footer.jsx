@@ -11,6 +11,13 @@ const Footer = () => {
         <div className="footer-section footer-branding">
           <h2 className="brand">Home Space</h2>
           <p>Your trusted partner in finding the perfect home. Browse, discover, and connect with top agents.</p>
+          
+          <img
+            src="http://localhost:5000/images/NewLogo.jpg"
+            alt="HomeSpace Logo"
+            className="logo-img"
+          />
+
         </div>
 
         {/* Quick Links */}

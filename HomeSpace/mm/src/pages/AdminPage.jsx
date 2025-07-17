@@ -21,8 +21,8 @@ const initialPropertyState = {
 const initialAgentState = {
   name: "",
   description: "",
-  email:"",
-  phone:"",
+  email: "",
+  phone: "",
   imageFile: null,
 };
 
@@ -232,8 +232,8 @@ function AdminPage() {
     setAgentForm({
       name: agent.name || "",
       description: agent.description || "",
-      email: agent.email ||"",
-      phone: agent.phone ||"",
+      email: agent.email || "",
+      phone: agent.phone || "",
       imageFile: null,
     });
     window.scrollTo(0, 0);
@@ -681,9 +681,9 @@ function AdminPage() {
                 {agents.map((agent) => (
                   <tr key={agent._id}>
                     <td>{agent.name}</td>
+                    <td>{agent.description}</td>
                     <td>{agent.email}</td>
                     <td>{agent.phone}</td>
-                    <td>{agent.description}</td>
                     <td>
                       {agent.imageUrl ? (
                         <img
